@@ -1,3 +1,5 @@
+<h1 align="center">ev</h1>
+
 <p align="center">
   <img src="https://img.shields.io/badge/version-0.1.0-blue?style=flat-square" alt="version" />
   <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="license" />
@@ -6,17 +8,17 @@
   <img src="https://img.shields.io/badge/tests-127%20passing-brightgreen?style=flat-square" alt="tests" />
 </p>
 
-<h1 align="center">ev</h1>
-
 <p align="center">
   <strong>Full change history for your database — zero application changes.</strong>
 </p>
 
 <p align="center">
-  <code>ev</code> connects to any relational database, infers semantic entities from
-  <br/>the foreign key graph, and installs lightweight triggers to capture every INSERT, UPDATE, and DELETE.
-  <br/>Changes are grouped into versioned changesets you can browse, query, and export.
+  <a href="https://sgmonda.com/entity-versioning">Website</a>
+  ·
+  <a href="https://github.com/sgmonda/entity-versioning/releases">Releases</a>
 </p>
+
+<code>ev</code> connects to any relational database, infers semantic entities from the foreign key graph, and installs lightweight triggers to capture every INSERT, UPDATE, and DELETE. Changes are grouped into versioned changesets you can browse, query, and export.
 
 ---
 
