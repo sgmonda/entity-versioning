@@ -60,10 +60,17 @@ export const initCommand = new Command()
         console.log(`  ${entity.name}: ${entity.children.length} children`);
       }
 
+      // Resolve conflicts: remove conflicting children from all entities
+      const conflictTables = new Set(resolution.conflicts.map((c) => c.table));
       if (resolution.conflicts.length > 0) {
-        console.log(`\n${resolution.conflicts.length} conflicts detected:`);
+        console.log(`\n${resolution.conflicts.length} conflicts detected (tables claimed by multiple entities):`);
         for (const conflict of resolution.conflicts) {
           console.log(`  ${conflict.table} -> claimed by: ${conflict.claimedBy.join(", ")}`);
+        }
+        console.log(`  These tables will be added to ignored_tables. Use 'ev entities' to reassign them manually.`);
+        // Remove conflicting tables from entity children
+        for (const entity of resolution.entities) {
+          entity.children = entity.children.filter((c) => !conflictTables.has(c.table));
         }
       }
 
@@ -84,7 +91,7 @@ export const initCommand = new Command()
         };
       }
 
-      const ignoredTables = [...classification.isolated, ...classification.lookup];
+      const ignoredTables = [...classification.isolated, ...classification.lookup, ...conflictTables];
 
       const config: EvConfig = {
         version: 1,

@@ -39,22 +39,35 @@ export const teardownCommand = new Command()
       if (!confirm) {
         console.log("DRY RUN — the following objects would be removed:\n");
         const sql = getSqlFromConnector(connector);
+        const engine = config.connection.engine;
 
-        const triggers = await sql`
-          SELECT tgname, c.relname
-          FROM pg_trigger t JOIN pg_class c ON t.tgrelid = c.oid
-          WHERE tgname LIKE '__ev_%'
-        `;
-        console.log(`Triggers (${triggers.length}):`);
-        for (const t of triggers) console.log(`  ${t.tgname} ON ${t.relname}`);
+        if (engine === "mysql") {
+          const triggers = await sql`
+            SELECT TRIGGER_NAME, EVENT_OBJECT_TABLE
+            FROM information_schema.TRIGGERS
+            WHERE TRIGGER_SCHEMA = DATABASE() AND TRIGGER_NAME LIKE '__ev_%'
+          `;
+          console.log(`Triggers (${triggers.length}):`);
+          for (const t of triggers) console.log(`  ${t.TRIGGER_NAME} ON ${t.EVENT_OBJECT_TABLE}`);
+          console.log(`Functions: (none — MySQL uses inline trigger bodies)`);
+          console.log(`Event triggers: (not supported on MySQL)`);
+        } else {
+          const triggers = await sql`
+            SELECT tgname, c.relname
+            FROM pg_trigger t JOIN pg_class c ON t.tgrelid = c.oid
+            WHERE tgname LIKE '__ev_%'
+          `;
+          console.log(`Triggers (${triggers.length}):`);
+          for (const t of triggers) console.log(`  ${t.tgname} ON ${t.relname}`);
 
-        const fns = await sql`SELECT proname FROM pg_proc WHERE proname LIKE '__ev_%'`;
-        console.log(`Functions (${fns.length}):`);
-        for (const f of fns) console.log(`  ${f.proname}`);
+          const fns = await sql`SELECT proname FROM pg_proc WHERE proname LIKE '__ev_%'`;
+          console.log(`Functions (${fns.length}):`);
+          for (const f of fns) console.log(`  ${f.proname}`);
 
-        const evts = await sql`SELECT evtname FROM pg_event_trigger WHERE evtname LIKE '__ev_%'`;
-        console.log(`Event triggers (${evts.length}):`);
-        for (const e of evts) console.log(`  ${e.evtname}`);
+          const evts = await sql`SELECT evtname FROM pg_event_trigger WHERE evtname LIKE '__ev_%'`;
+          console.log(`Event triggers (${evts.length}):`);
+          for (const e of evts) console.log(`  ${e.evtname}`);
+        }
 
         console.log(`Tables: __ev_changelog, __ev_schema_snapshots`);
         console.log(`\nRun with --confirm to execute.`);

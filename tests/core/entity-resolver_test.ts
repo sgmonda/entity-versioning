@@ -104,6 +104,33 @@ Deno.test("entity-resolver - table without PK generates warning", () => {
   assert(hasWarning, "Should have warning about table without PK");
 });
 
+Deno.test("entity-resolver - deduplicates child with multiple FKs to same root", () => {
+  // user needs an outgoing FK so it's not classified as a lookup table
+  const tables: TableInfo[] = [
+    { name: "user", schema: "public", columns: [{ name: "id", dataType: "integer", nullable: false, isPrimaryKey: true }] },
+    { name: "country", schema: "public", columns: [{ name: "id", dataType: "integer", nullable: false, isPrimaryKey: true }] },
+    { name: "class_history", schema: "public", columns: [{ name: "id", dataType: "integer", nullable: false, isPrimaryKey: true }] },
+  ];
+  const fks: ForeignKeyInfo[] = [
+    { fromTable: "user", fromColumn: "countryId", toTable: "country", toColumn: "id", constraintName: "fk_country" },
+    { fromTable: "class_history", fromColumn: "createdByUserId", toTable: "user", toColumn: "id", constraintName: "fk_created" },
+    { fromTable: "class_history", fromColumn: "modifiedByUserId", toTable: "user", toColumn: "id", constraintName: "fk_modified" },
+  ];
+
+  const graph = buildFkGraph(tables, fks);
+  const classification = classifyTables(graph);
+  const resolution = resolveEntities(graph, classification, tables);
+
+  const userEntity = resolution.entities.find((e) => e.name === "user");
+  assert(userEntity, "user entity should exist");
+  // class_history should appear only once as a child, not twice
+  const classHistoryChildren = userEntity.children.filter((c) => c.table === "class_history");
+  assertEquals(classHistoryChildren.length, 1, "class_history should appear only once as child of user");
+
+  // No conflicts should be reported (same root, not a real conflict)
+  assertEquals(resolution.conflicts.length, 0, "Should not have conflicts for same-root deduplication");
+});
+
 Deno.test("entity-resolver - entity root with children is valid", () => {
   const tables: TableInfo[] = [
     { name: "parent", schema: "public", columns: [{ name: "id", dataType: "integer", nullable: false, isPrimaryKey: true }] },

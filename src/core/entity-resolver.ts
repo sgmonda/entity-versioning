@@ -42,20 +42,26 @@ export function resolveEntities(
       continue;
     }
 
-    // Find children: non-lookup tables with direct FK to this root
+    // Find children: non-lookup, non-root tables with direct FK to this root
     const children: { table: string; fkColumn: string }[] = [];
+    const childrenSeen = new Set<string>();
     for (const fk of graph.edges) {
       if (fk.toTable === root && fk.fromTable !== root) {
         if (classification.lookup.has(fk.fromTable)) continue;
+        // Skip tables that are themselves candidate roots (they are their own entities)
+        if (classification.candidateRoots.has(fk.fromTable)) continue;
+        // Deduplicate: only add each child table once per root (use first FK found)
+        if (childrenSeen.has(fk.fromTable)) continue;
         // Check child has PK
         const childInfo = tableMap.get(fk.fromTable);
         if (childInfo && !childInfo.columns.some((c) => c.isPrimaryKey)) {
           warnings.push(`Table '${fk.fromTable}' has no primary key, skipping as child of '${root}'`);
           continue;
         }
+        childrenSeen.add(fk.fromTable);
         children.push({ table: fk.fromTable, fkColumn: fk.fromColumn });
 
-        // Track ownership for conflict detection
+        // Track ownership for conflict detection (each root counted once per child)
         if (!childOwnership.has(fk.fromTable)) {
           childOwnership.set(fk.fromTable, []);
         }

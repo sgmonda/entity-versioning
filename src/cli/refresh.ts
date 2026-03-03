@@ -44,6 +44,7 @@ export const refreshCommand = new Command()
       }
 
       const sql = getSqlFromConnector(connector);
+      const engine = config.connection.engine;
 
       for (const drift of health.schemaDrift) {
         console.log(`Schema drift on '${drift.table}':`);
@@ -57,28 +58,47 @@ export const refreshCommand = new Command()
           ORDER BY captured_at DESC LIMIT 1
         `;
         const newSnapshot = await connector.getSchemaSnapshot([drift.table]);
+        const oldVal = oldSnap.length > 0 ? JSON.stringify(oldSnap[0].columns) : null;
+        const newVal = JSON.stringify(newSnapshot.tables[drift.table]);
+        const txId = engine === "mysql" ? crypto.randomUUID() : null;
 
-        await sql`
-          INSERT INTO __ev_changelog
-            (entity_type, entity_id, table_name, row_id, operation,
-             old_values, new_values, transaction_id)
-          VALUES (
-            '__schema', '*', ${drift.table}, '*', 'SCHEMA_CHANGE',
-            ${oldSnap.length > 0 ? JSON.stringify(oldSnap[0].columns) : null},
-            ${JSON.stringify(newSnapshot.tables[drift.table])},
-            txid_current()::TEXT
-          )
-        `;
+        if (engine === "mysql") {
+          await sql`
+            INSERT INTO __ev_changelog
+              (entity_type, entity_id, table_name, row_id, operation,
+               old_values, new_values, transaction_id)
+            VALUES (
+              '__schema', '*', ${drift.table}, '*', 'SCHEMA_CHANGE',
+              ${oldVal}, ${newVal}, ${txId}
+            )
+          `;
+        } else {
+          await sql`
+            INSERT INTO __ev_changelog
+              (entity_type, entity_id, table_name, row_id, operation,
+               old_values, new_values, transaction_id)
+            VALUES (
+              '__schema', '*', ${drift.table}, '*', 'SCHEMA_CHANGE',
+              ${oldVal}, ${newVal}, txid_current()::TEXT
+            )
+          `;
+        }
 
         await sql`
           INSERT INTO __ev_schema_snapshots (table_name, columns)
-          VALUES (${drift.table}, ${JSON.stringify(newSnapshot.tables[drift.table])})
+          VALUES (${drift.table}, ${newVal})
         `;
       }
 
       console.log("\nRegenerating triggers...");
-      const { dropTriggers } = await import("../connectors/postgres/triggers.ts");
-      await dropTriggers(sql);
+      if (engine === "mysql") {
+        const pool = (connector as unknown as import("../connectors/mysql/index.ts").MySQLConnector).getPool();
+        const { dropTriggers } = await import("../connectors/mysql/triggers.ts");
+        await dropTriggers(pool);
+      } else {
+        const { dropTriggers } = await import("../connectors/postgres/triggers.ts");
+        await dropTriggers(sql);
+      }
       const result = await connector.installTriggers(entities);
       console.log(`  ${result.installed} triggers installed`);
 

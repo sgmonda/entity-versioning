@@ -33,15 +33,27 @@ export const stopCommand = new Command()
         password,
       });
 
-      const sql = getSqlFromConnector(connector);
+      const engine = config.connection.engine;
 
-      const { dropTriggers } = await import("../connectors/postgres/triggers.ts");
-      const dropped = await dropTriggers(sql);
-      console.log(`Dropped ${dropped.length} triggers`);
+      if (engine === "mysql") {
+        const pool = (connector as unknown as import("../connectors/mysql/index.ts").MySQLConnector).getPool();
+        const { dropTriggers } = await import("../connectors/mysql/triggers.ts");
+        const dropped = await dropTriggers(pool);
+        console.log(`Dropped ${dropped.length} triggers`);
 
-      const { dropDdlHooks } = await import("../connectors/postgres/ddl-hooks.ts");
-      const droppedHooks = await dropDdlHooks(sql);
-      console.log(`Dropped ${droppedHooks.length} DDL hook objects`);
+        const { dropDdlHooks } = await import("../connectors/mysql/ddl-hooks.ts");
+        const droppedHooks = await dropDdlHooks(pool);
+        console.log(`Dropped ${droppedHooks.length} DDL hook objects`);
+      } else {
+        const sql = getSqlFromConnector(connector);
+        const { dropTriggers } = await import("../connectors/postgres/triggers.ts");
+        const dropped = await dropTriggers(sql);
+        console.log(`Dropped ${dropped.length} triggers`);
+
+        const { dropDdlHooks } = await import("../connectors/postgres/ddl-hooks.ts");
+        const droppedHooks = await dropDdlHooks(sql);
+        console.log(`Dropped ${droppedHooks.length} DDL hook objects`);
+      }
 
       console.log("Changelog data preserved.");
       await connector.disconnect();
