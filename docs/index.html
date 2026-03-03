@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ev — Full change history for your database</title>
-  <meta name="description" content="ev connects to your PostgreSQL or MySQL database, infers entities from the FK graph, and installs lightweight triggers to capture every INSERT, UPDATE, and DELETE. Zero application changes required.">
+  <meta name="description" content="ev connects to any relational database, infers entities from the FK graph, and installs lightweight triggers to capture every INSERT, UPDATE, and DELETE. Zero application changes required.">
   <meta name="theme-color" content="#00d4aa">
   <meta property="og:title" content="ev — Entity Versioning">
   <meta property="og:description" content="Full change history for your database — zero application changes.">
@@ -47,7 +47,7 @@
           <span class="hero-accent">&mdash; zero application changes.</span>
         </h1>
         <p class="hero-subtitle">
-          <code>ev</code> connects to your PostgreSQL or MySQL database, infers entities from
+          <code>ev</code> connects to any relational database, infers entities from
           the foreign key graph, and installs lightweight triggers to capture every INSERT,
           UPDATE, and DELETE. Changes are grouped into versioned changesets you can browse,
           query, and export.
@@ -174,8 +174,8 @@
           <div class="feature-icon">
             <svg viewBox="0 0 24 24"><path d="M12 2v6m0 8v6M4.93 4.93l4.24 4.24m5.66 5.66l4.24 4.24M2 12h6m8 0h6M4.93 19.07l4.24-4.24m5.66-5.66l4.24-4.24"/></svg>
           </div>
-          <h3>Multi-database</h3>
-          <p>Pluggable connector interface. PostgreSQL and MySQL ship built-in. MariaDB and SQL Server planned.</p>
+          <h3>Any relational database</h3>
+          <p>Pluggable connector interface. PostgreSQL and MySQL ship built-in. Community connectors welcome for MariaDB, SQL Server, SQLite, and more.</p>
         </div>
       </div>
     </div>
@@ -192,7 +192,7 @@
           <div class="step-content">
             <h3>Initialize</h3>
             <p>Point ev at your database. It introspects the schema, analyzes the FK graph, and infers entities automatically.</p>
-            <div class="step-code"><code>$ ev init --host localhost --port 5432 --database myapp --engine postgres</code></div>
+            <div class="step-code"><code>$ ev init --host localhost --database myapp --engine &lt;your-engine&gt;</code></div>
           </div>
         </div>
         <div class="step-connector"></div>
@@ -287,8 +287,8 @@ Dropped 9 triggers, 3 functions, 2 tables, 1 event trigger
 <span class="t-dim">&#9474;</span>                  <span class="t-magenta t-bold">Connector Interface</span>                   <span class="t-dim">&#9474;</span>
 <span class="t-dim">&#9474;</span>  introspect &middot; triggers &middot; ddl_hooks &middot; query &middot; health    <span class="t-dim">&#9474;</span>
 <span class="t-dim">&#9500;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9516;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9516;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9508;</span>
-<span class="t-dim">&#9474;</span>  <span class="t-green t-bold">PostgreSQL</span>      <span class="t-dim">&#9474;</span>    <span class="t-green t-bold">MySQL</span>     <span class="t-dim">&#9474;</span> <span class="t-dim">MariaDB &middot; SQLServer</span>  <span class="t-dim">&#9474;</span>
-<span class="t-dim">&#9474;</span>  <span class="t-dim">(built-in)</span>      <span class="t-dim">&#9474;</span>  <span class="t-dim">(built-in)</span>  <span class="t-dim">&#9474;</span> <span class="t-dim">(planned)</span>            <span class="t-dim">&#9474;</span>
+<span class="t-dim">&#9474;</span>  <span class="t-green t-bold">PostgreSQL</span>      <span class="t-dim">&#9474;</span>    <span class="t-green t-bold">MySQL</span>     <span class="t-dim">&#9474;</span> <span class="t-cyan t-bold">Community</span>            <span class="t-dim">&#9474;</span>
+<span class="t-dim">&#9474;</span>  <span class="t-dim">(built-in)</span>      <span class="t-dim">&#9474;</span>  <span class="t-dim">(built-in)</span>  <span class="t-dim">&#9474;</span> <span class="t-dim">connectors</span>           <span class="t-dim">&#9474;</span>
 <span class="t-dim">&#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9524;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9524;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;</span>
          <span class="t-dim">&#9474;</span>
          <span class="t-dim">&#9660;</span>
@@ -311,7 +311,7 @@ Dropped 9 triggers, 3 functions, 2 tables, 1 event trigger
         </div>
         <div class="arch-card" data-animate>
           <h4>Connectors</h4>
-          <p>Engine-specific implementations loaded dynamically. PostgreSQL and MySQL built-in.</p>
+          <p>Engine-specific implementations loaded dynamically. Add your own for any relational database.</p>
         </div>
       </div>
     </div>
@@ -350,7 +350,9 @@ deno compile \
 export EV_DB_USER=myuser
 export EV_DB_PASSWORD=mypass
 
-<span class="t-dim"># Auto-discover entities</span>
+<span class="t-dim"># Auto-discover entities
+# Works with postgres, mysql, and
+# any community connector</span>
 ev init \
   --host localhost \
   --port 5432 \
@@ -413,7 +415,7 @@ ev log --entity course \
         </div>
       </div>
       <div class="footer-bottom">
-        <p>Built with Deno &middot; 127 tests passing &middot; PostgreSQL &amp; MySQL</p>
+        <p>Built with Deno &middot; Works with any relational database</p>
       </div>
     </div>
   </footer>

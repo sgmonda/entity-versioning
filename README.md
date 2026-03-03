@@ -2,8 +2,7 @@
   <img src="https://img.shields.io/badge/version-0.1.0-blue?style=flat-square" alt="version" />
   <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="license" />
   <img src="https://img.shields.io/badge/deno-%3E%3D2.0-black?style=flat-square&logo=deno" alt="deno" />
-  <img src="https://img.shields.io/badge/postgres-16-336791?style=flat-square&logo=postgresql&logoColor=white" alt="postgres" />
-  <img src="https://img.shields.io/badge/mysql-8-4479A1?style=flat-square&logo=mysql&logoColor=white" alt="mysql" />
+  <img src="https://img.shields.io/badge/databases-relational-336791?style=flat-square&logo=database&logoColor=white" alt="databases" />
   <img src="https://img.shields.io/badge/tests-127%20passing-brightgreen?style=flat-square" alt="tests" />
 </p>
 
@@ -14,7 +13,7 @@
 </p>
 
 <p align="center">
-  <code>ev</code> connects to an existing PostgreSQL or MySQL database, infers semantic entities from
+  <code>ev</code> connects to any relational database, infers semantic entities from
   <br/>the foreign key graph, and installs lightweight triggers to capture every INSERT, UPDATE, and DELETE.
   <br/>Changes are grouped into versioned changesets you can browse, query, and export.
 </p>
@@ -62,7 +61,7 @@ All database objects use the `__ev_` prefix. Run `ev teardown` and it's gone —
 | **Schema drift detection** | DDL hooks capture `ALTER TABLE` events and record schema changes alongside data changes. |
 | **Clean teardown** | `ev teardown` removes everything. All objects are namespaced under `__ev_`. |
 | **Single binary** | Compiles to a standalone executable via `deno compile`. No runtime needed. |
-| **Pluggable connectors** | Engine-agnostic core with a connector interface. PostgreSQL and MySQL ship built-in. |
+| **Pluggable connectors** | Engine-agnostic core with a connector interface. PostgreSQL and MySQL ship built-in; community connectors welcome. |
 
 ## Quick start
 
@@ -90,7 +89,7 @@ export EV_DB_USER=myuser
 export EV_DB_PASSWORD=mypassword
 
 ev init --host localhost --port 5432 --database myapp --engine postgres
-# or for MySQL:
+# Works with any supported engine:
 # ev init --host localhost --port 3306 --database myapp --engine mysql
 ```
 
@@ -214,9 +213,8 @@ For each versioned table, `ev` installs triggers that write to `__ev_changelog`:
 
 - **Root tables**: `entity_id` = the row's primary key
 - **Child tables**: `entity_id` = the FK value pointing to the root
-- **Transaction ID**: PostgreSQL uses `txid_current()` to group operations in the same transaction; MySQL uses `UUID()` per trigger (grouped by time window)
-- **Serialization**: PostgreSQL uses `to_jsonb(OLD/NEW)` for full row state; MySQL uses `JSON_OBJECT()` built from the column list
-- **Trigger count**: PostgreSQL uses 1 multi-event trigger per table; MySQL uses 3 separate triggers (INSERT/UPDATE/DELETE)
+- **Transaction ID**: Each connector uses the best available mechanism to group operations within the same transaction (e.g., `txid_current()` in PostgreSQL, `UUID()` with time-window grouping in MySQL)
+- **Serialization**: Each connector serializes row state using native JSON functions (e.g., `to_jsonb()`, `JSON_OBJECT()`)
 
 ### Changeset grouping
 
@@ -239,8 +237,8 @@ Raw changelog entries are grouped into semantic changesets:
 │                  Connector Interface                   │
 │  introspect · triggers · ddl_hooks · query · health    │
 ├──────────────────┬──────────────┬─────────────────────┤
-│  PostgreSQL      │    MySQL     │ MariaDB · SQLServer  │
-│  (v1)            │    (v1)      │ (planned)            │
+│  PostgreSQL      │    MySQL     │  Community           │
+│  (built-in)      │  (built-in)  │  connectors          │
 └──────────────────┴──────────────┴─────────────────────┘
          │
          ▼
@@ -374,7 +372,7 @@ interface Connector {
 
 | Field | Description |
 |---|---|
-| `engine` | Database engine (`postgres` or `mysql`) |
+| `engine` | Database engine (e.g., `postgres`, `mysql`, or any registered connector) |
 | `host` | Database host |
 | `port` | Database port |
 | `database` | Database name |
@@ -416,24 +414,26 @@ entities:
 
 </details>
 
-## MySQL-specific notes
+## Connector-specific notes
 
-- **No DDL hooks** — MySQL does not support event triggers. Schema changes are not automatically captured. Use `ev refresh` after `ALTER TABLE` operations.
-- **Transaction IDs** — MySQL uses `UUID()` per trigger invocation instead of a shared transaction ID. Operations within the same transaction are grouped via the `autocommit_grouping_window_ms` time window rather than by shared `txid`.
-- **3 triggers per table** — MySQL requires separate `AFTER INSERT`, `AFTER UPDATE`, and `AFTER DELETE` triggers instead of PostgreSQL's single multi-event trigger.
-- **Binary logging** — MySQL with binary logging enabled requires `log_bin_trust_function_creators=1` to create triggers without SUPER privilege.
+Each database engine has its own capabilities and constraints. The connector interface abstracts these differences, but some are worth noting:
+
+- **DDL hooks** — Not all engines support event triggers for automatic schema change detection. Use `ev refresh` after `ALTER TABLE` when DDL hooks are unavailable.
+- **Transaction grouping** — Connectors use the best mechanism available (native transaction IDs, UUID-based grouping with time windows, etc.).
+- **Trigger model** — The number and shape of triggers varies by engine. The connector handles this transparently.
+
+See each connector's documentation for engine-specific details.
 
 ## Limitations
 
 - **Depth-1 children** — Grandchild tables (FK chains > 1 hop) not yet supported.
 - **Single-column PKs** — Tables with composite primary keys are excluded with a warning.
-- **DDL hooks need superuser (PostgreSQL)** — PostgreSQL event triggers require superuser. Use `ev refresh` manually if unavailable.
-- **No DDL hooks (MySQL)** — MySQL does not support event triggers at all.
+- **DDL hooks** — Availability depends on the database engine. Some require superuser privileges, others don't support them at all. Use `ev refresh` manually when DDL hooks are unavailable.
 - **Read-only history** — Revert/rollback operations planned for v2.
 
 ## Contributing
 
-Contributions are welcome. Please open an issue first to discuss what you'd like to change.
+Contributions are welcome — especially new database connectors! If you'd like to add support for MariaDB, SQL Server, SQLite, or any other relational database, check the [Writing a connector](#writing-a-connector) section above. Please open an issue first to discuss what you'd like to change.
 
 ```bash
 git clone https://github.com/sgmonda/entity-versioning.git
