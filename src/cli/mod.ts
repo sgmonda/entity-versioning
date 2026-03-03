@@ -7,11 +7,14 @@ import { statusCommand } from "./status.ts";
 import { logCommand } from "./log.ts";
 import { teardownCommand } from "./teardown.ts";
 import { refreshCommand } from "./refresh.ts";
+import { upgradeCommand } from "./upgrade.ts";
+import { uninstallCommand } from "./uninstall.ts";
+import denoConfig from "../../deno.json" with { type: "json" };
 
 export function createCli() {
   return new Command()
     .name("ev")
-    .version("0.1.0")
+    .version(denoConfig.version)
     .description(
       "Entity Versioning — track data changes in your relational database",
     )
@@ -26,7 +29,9 @@ export function createCli() {
     .command("status", statusCommand)
     .command("log", logCommand)
     .command("teardown", teardownCommand)
-    .command("refresh", refreshCommand);
+    .command("refresh", refreshCommand)
+    .command("upgrade", upgradeCommand)
+    .command("uninstall", uninstallCommand);
 }
 
 export async function run(): Promise<void> {

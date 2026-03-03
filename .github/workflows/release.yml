@@ -1,0 +1,83 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  check-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.ver.outputs.version }}
+      should_release: ${{ steps.check.outputs.should_release }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read version from deno.json
+        id: ver
+        run: |
+          VERSION=$(grep '"version"' deno.json | head -1 | sed 's/.*"version": *"//;s/".*//')
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+      - name: Check if tag exists
+        id: check
+        run: |
+          if git ls-remote --tags origin "refs/tags/v${{ steps.ver.outputs.version }}" | grep -q .; then
+            echo "should_release=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "should_release=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  build:
+    needs: check-version
+    if: needs.check-version.outputs.should_release == 'true'
+    strategy:
+      matrix:
+        include:
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-latest
+            artifact: ev-linux-x86_64
+          - target: aarch64-apple-darwin
+            os: macos-latest
+            artifact: ev-macos-aarch64
+          - target: x86_64-apple-darwin
+            os: macos-latest
+            artifact: ev-macos-x86_64
+          - target: x86_64-pc-windows-msvc
+            os: windows-latest
+            artifact: ev-windows-x86_64.exe
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Compile
+        run: >
+          deno compile
+          --allow-net --allow-read --allow-env --allow-write
+          --target ${{ matrix.target }}
+          --output ${{ matrix.artifact }}
+          main.ts
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: ${{ matrix.artifact }}
+
+  release:
+    needs: [check-version, build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ needs.check-version.outputs.version }}
+          name: v${{ needs.check-version.outputs.version }}
+          generate_release_notes: true
+          files: artifacts/*

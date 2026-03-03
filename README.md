@@ -67,17 +67,17 @@ All database objects use the `__ev_` prefix. Run `ev teardown` and it's gone —
 
 ### Install
 
-Download a prebuilt binary from [Releases](https://github.com/sgmonda/entity-versioning/releases), or build from source:
+One-liner install (Linux / macOS):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/sgmonda/entity-versioning/main/install.sh | sh
+```
+
+Or build from source:
 
 ```bash
 # Requires Deno >= 2.0
 deno compile --allow-net --allow-read --allow-env --allow-write --output ev main.ts
-```
-
-Or run directly without installing:
-
-```bash
-deno run --allow-net --allow-read --allow-env --allow-write main.ts --help
 ```
 
 ### 1. Initialize
@@ -177,6 +177,8 @@ ev teardown --confirm
 | `ev log` | Query change history for a specific entity instance |
 | `ev teardown` | Remove all `__ev_` objects from the database |
 | `ev refresh` | Detect schema drift, record changes, regenerate triggers |
+| `ev upgrade` | Upgrade ev to the latest version |
+| `ev uninstall` | Remove the ev binary from your system |
 
 ## How it works
 
