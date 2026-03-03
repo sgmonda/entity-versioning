@@ -1,75 +1,122 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ev — Full change history for your database</title>
-  <meta name="description" content="ev connects to any relational database, infers entities from the FK graph, and installs lightweight triggers to capture every INSERT, UPDATE, and DELETE. Zero application changes required.">
-  <meta name="theme-color" content="#00d4aa">
-  <meta property="og:title" content="ev — Entity Versioning">
-  <meta property="og:description" content="Full change history for your database — zero application changes.">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://sgmonda.github.io/entity-versioning/">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect rx='12' width='64' height='64' fill='%230a0a0a'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='monospace' font-weight='bold' font-size='28' fill='%2300d4aa'>ev</text></svg>">
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>ev — Full change history for your database</title>
+        <meta
+            name="description"
+            content="ev connects to any relational database, infers entities from the FK graph, and installs lightweight triggers to capture every INSERT, UPDATE, and DELETE. Zero application changes required."
+        />
+        <meta name="theme-color" content="#00d4aa" />
+        <meta property="og:title" content="ev — Entity Versioning" />
+        <meta
+            property="og:description"
+            content="Full change history for your database — zero application changes."
+        />
+        <meta property="og:type" content="website" />
+        <meta
+            property="og:url"
+            content="https://sgmonda.github.io/entity-versioning/"
+        />
+        <link
+            rel="icon"
+            href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect rx='12' width='64' height='64' fill='%230a0a0a'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='monospace' font-weight='bold' font-size='28' fill='%2300d4aa'>ev</text></svg>"
+        />
+        <link rel="stylesheet" href="style.css" />
+    </head>
+    <body>
+        <!-- ===== NAV ===== -->
+        <nav class="nav" id="nav">
+            <div class="nav-inner">
+                <a href="#" class="nav-logo">ev</a>
+                <button
+                    class="nav-toggle"
+                    id="nav-toggle"
+                    aria-label="Toggle menu"
+                >
+                    <span></span><span></span><span></span>
+                </button>
+                <ul class="nav-links" id="nav-links">
+                    <li><a href="#quickstart">Quick start</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#how-it-works">How it works</a></li>
+                    <li><a href="#architecture">Architecture</a></li>
+                    <li>
+                        <a
+                            href="https://github.com/sgmonda/entity-versioning"
+                            class="nav-gh"
+                            target="_blank"
+                            rel="noopener"
+                        >
+                            <svg viewBox="0 0 16 16">
+                                <path
+                                    d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"
+                                />
+                            </svg>
+                            GitHub
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
 
-  <!-- ===== NAV ===== -->
-  <nav class="nav" id="nav">
-    <div class="nav-inner">
-      <a href="#" class="nav-logo">ev</a>
-      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu">
-        <span></span><span></span><span></span>
-      </button>
-      <ul class="nav-links" id="nav-links">
-        <li><a href="#features">Features</a></li>
-        <li><a href="#how-it-works">How it works</a></li>
-        <li><a href="#architecture">Architecture</a></li>
-        <li><a href="#quickstart">Quick start</a></li>
-        <li>
-          <a href="https://github.com/sgmonda/entity-versioning" class="nav-gh" target="_blank" rel="noopener">
-            <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
-            GitHub
-          </a>
-        </li>
-      </ul>
-    </div>
-  </nav>
-
-  <!-- ===== HERO ===== -->
-  <header class="hero" id="hero">
-    <div class="container">
-      <div class="hero-content">
-        <div class="hero-badge">Open Source &middot; MIT License &middot; v0.1.0</div>
-        <h1 class="hero-title">
-          Full change history for your database
-          <span class="hero-accent">&mdash; zero application changes.</span>
-        </h1>
-        <p class="hero-subtitle">
-          <code>ev</code> connects to any relational database, infers entities from
-          the foreign key graph, and installs lightweight triggers to capture every INSERT,
-          UPDATE, and DELETE. Changes are grouped into versioned changesets you can browse,
-          query, and export.
-        </p>
-        <div class="hero-actions">
-          <a href="#quickstart" class="btn btn-primary">Get Started</a>
-          <a href="https://github.com/sgmonda/entity-versioning" class="btn btn-secondary" target="_blank" rel="noopener">
-            <svg viewBox="0 0 16 16" width="18" height="18" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
-            View on GitHub
-          </a>
-        </div>
-      </div>
-      <div class="hero-terminal">
-        <div class="terminal">
-          <div class="terminal-header">
-            <span class="terminal-dot red"></span>
-            <span class="terminal-dot yellow"></span>
-            <span class="terminal-dot green"></span>
-            <span class="terminal-title">ev log --entity course --id 42</span>
-          </div>
-          <div class="terminal-body">
-<pre><code><span class="t-yellow t-bold">changeset v3</span>  <span class="t-dim">[tx: 8a3f2b1c]  2026-02-15 14:23:07 UTC</span>
+        <!-- ===== HERO ===== -->
+        <header class="hero" id="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <div class="hero-badge">
+                        Open Source &middot; MIT License &middot; v0.1.0
+                    </div>
+                    <h1 class="hero-title">
+                        Full change history for your database
+                        <span class="hero-accent"
+                            >&mdash; zero application changes.</span
+                        >
+                    </h1>
+                    <p class="hero-subtitle">
+                        <code>ev</code> connects to any relational database,
+                        infers entities from the foreign key graph, and installs
+                        lightweight triggers to capture every INSERT, UPDATE,
+                        and DELETE. Changes are grouped into versioned
+                        changesets you can browse, query, and export.
+                    </p>
+                    <div class="hero-actions">
+                        <a href="#quickstart" class="btn btn-primary"
+                            >Get Started</a
+                        >
+                        <a
+                            href="https://github.com/sgmonda/entity-versioning"
+                            class="btn btn-secondary"
+                            target="_blank"
+                            rel="noopener"
+                        >
+                            <svg
+                                viewBox="0 0 16 16"
+                                width="18"
+                                height="18"
+                                fill="currentColor"
+                            >
+                                <path
+                                    d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"
+                                />
+                            </svg>
+                            View on GitHub
+                        </a>
+                    </div>
+                </div>
+                <div class="hero-terminal">
+                    <div class="terminal">
+                        <div class="terminal-header">
+                            <span class="terminal-dot red"></span>
+                            <span class="terminal-dot yellow"></span>
+                            <span class="terminal-dot green"></span>
+                            <span class="terminal-title"
+                                >ev log --entity course --id 42</span
+                            >
+                        </div>
+                        <div class="terminal-body">
+                            <pre><code><span class="t-yellow t-bold">changeset v3</span>  <span class="t-dim">[tx: 8a3f2b1c]  2026-02-15 14:23:07 UTC</span>
   <span class="t-dim">tables:</span> course, course_upsell
   -- <span class="t-cyan t-bold">course</span> <span class="t-dim">(id=42)</span>
      <span class="t-yellow t-bold">UPDATE</span>  <span class="t-bold">endDate</span>: <span class="t-red">2026-05-01</span> <span class="t-dim">-&gt;</span> <span class="t-green">2026-06-01</span>
@@ -85,152 +132,321 @@
   <span class="t-dim">tables:</span> course
   -- <span class="t-cyan t-bold">course</span> <span class="t-dim">(id=42)</span>
      <span class="t-green t-bold">INSERT</span>  <span class="t-bold">name</span>=Intro to SQL, <span class="t-bold">startDate</span>=2026-03-01</code></pre>
-          </div>
-        </div>
-      </div>
-    </div>
-  </header>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
 
-  <!-- ===== WHY EV? ===== -->
-  <section class="section" id="why">
-    <div class="container">
-      <h2 class="section-title">Why ev?</h2>
-      <p class="section-subtitle">Most audit-log solutions require you to instrument your application &mdash; ORM hooks, middleware, custom triggers written by hand. <code>ev</code> takes a different approach.</p>
-      <div class="cards-grid cards-3">
-        <div class="card" data-animate>
-          <div class="card-icon">
-            <svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4.03 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/></svg>
-          </div>
-          <h3>Point it at your database</h3>
-          <p>It reads your schema and figures out the rest. No configuration beyond a connection string.</p>
-        </div>
-        <div class="card" data-animate>
-          <div class="card-icon">
-            <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-          </div>
-          <h3>It installs triggers for you</h3>
-          <p>No hand-written SQL, no ORM plugins. Lightweight triggers that capture every change automatically.</p>
-        </div>
-        <div class="card" data-animate>
-          <div class="card-icon">
-            <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="3"/><circle cx="5" cy="19" r="3"/><circle cx="19" cy="19" r="3"/><path d="M12 8v4m-4.5 2.6L10 12.5m7 4.6L14 12.5"/></svg>
-          </div>
-          <h3>Entities, not just tables</h3>
-          <p>A course with its upsells and services is tracked as one logical unit. Changes are grouped semantically.</p>
-        </div>
-      </div>
-    </div>
-  </section>
+        <!-- ===== QUICK START ===== -->
+        <section class="section" id="quickstart">
+            <div class="container">
+                <h2 class="section-title">Quick start</h2>
+                <p class="section-subtitle">
+                    Up and running in under five minutes.
+                </p>
+                <div class="quickstart-grid">
+                    <div class="quickstart-step" data-animate>
+                        <h3>Install</h3>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span>Shell</span>
+                                <button class="copy-btn">Copy</button>
+                            </div>
+                            <pre><code><span class="t-dim"># One-liner install (Linux / macOS)</span>
+curl -fsSL https://raw.githubusercontent.com/sgmonda/entity-versioning/main/install.sh | sh</code></pre>
+                        </div>
+                    </div>
+                    <div class="quickstart-step" data-animate>
+                        <h3>Initialize</h3>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span>Shell</span>
+                                <button class="copy-btn">Copy</button>
+                            </div>
+                            <pre><code><span class="t-dim"># Auto-discover entities</span>
+ev init \
+  --host localhost \
+  --port 5432 \
+  --database myapp \
+  --engine postgres
 
-  <!-- ===== FEATURES ===== -->
-  <section class="section section-alt" id="features">
-    <div class="container">
-      <h2 class="section-title">Features</h2>
-      <p class="section-subtitle">Everything you need to build a complete audit trail, without touching your application code.</p>
-      <div class="features-grid">
-        <div class="feature" data-animate>
-          <div class="feature-icon">
-            <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          </div>
-          <h3>Zero app changes</h3>
-          <p>Works entirely through database triggers. No ORM plugins, no middleware, no code changes.</p>
-        </div>
-        <div class="feature" data-animate>
-          <div class="feature-icon">
-            <svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/><path d="M8 6h8M6 8v8m12-8v8M8 18h8"/></svg>
-          </div>
-          <h3>Entity inference</h3>
-          <p>Analyzes your FK graph to discover entities and their child tables automatically.</p>
-        </div>
-        <div class="feature" data-animate>
-          <div class="feature-icon">
-            <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="5" rx="1"/><rect x="2" y="11" width="20" height="5" rx="1"/><path d="M6 20h12" stroke-dasharray="2 2"/></svg>
-          </div>
-          <h3>Transaction-aware</h3>
-          <p>Operations within the same DB transaction are grouped into a single changeset.</p>
-        </div>
-        <div class="feature" data-animate>
-          <div class="feature-icon">
-            <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-          </div>
-          <h3>Schema drift detection</h3>
-          <p>DDL hooks capture ALTER TABLE events and record schema changes alongside data changes.</p>
-        </div>
-        <div class="feature" data-animate>
-          <div class="feature-icon">
-            <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
-          </div>
-          <h3>Clean teardown</h3>
-          <p><code>ev teardown</code> removes everything. All objects are namespaced under <code>__ev_</code>.</p>
-        </div>
-        <div class="feature" data-animate>
-          <div class="feature-icon">
-            <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
-          </div>
-          <h3>Single binary</h3>
-          <p>Compiles to a standalone executable via <code>deno compile</code>. No runtime needed.</p>
-        </div>
-        <div class="feature" data-animate>
-          <div class="feature-icon">
-            <svg viewBox="0 0 24 24"><path d="M12 2v6m0 8v6M4.93 4.93l4.24 4.24m5.66 5.66l4.24 4.24M2 12h6m8 0h6M4.93 19.07l4.24-4.24m5.66-5.66l4.24-4.24"/></svg>
-          </div>
-          <h3>Any relational database</h3>
-          <p>Pluggable connector interface. PostgreSQL and MySQL ship built-in. Community connectors welcome for MariaDB, SQL Server, SQLite, and more.</p>
-        </div>
-      </div>
-    </div>
-  </section>
+<span class="t-dim"># Fine-tune entities</span>
+ev entities</code></pre>
+                        </div>
+                    </div>
+                    <div class="quickstart-step" data-animate>
+                        <h3>Start &amp; query</h3>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span>Shell</span>
+                                <button class="copy-btn">Copy</button>
+                            </div>
+                            <pre><code><span class="t-dim"># Install triggers</span>
+ev start
 
-  <!-- ===== HOW IT WORKS ===== -->
-  <section class="section" id="how-it-works">
-    <div class="container">
-      <h2 class="section-title">How it works</h2>
-      <p class="section-subtitle">Three commands. Five minutes. Full audit trail.</p>
-      <div class="steps">
-        <div class="step" data-animate>
-          <div class="step-number">1</div>
-          <div class="step-content">
-            <h3>Initialize</h3>
-            <p>Point ev at your database. It introspects the schema, analyzes the FK graph, and infers entities automatically.</p>
-            <div class="step-code"><code>$ ev init --host localhost --database myapp --engine &lt;your-engine&gt;</code></div>
-          </div>
-        </div>
-        <div class="step-connector"></div>
-        <div class="step" data-animate>
-          <div class="step-number">2</div>
-          <div class="step-content">
-            <h3>Start tracking</h3>
-            <p>Install changelog tables, DML triggers, and DDL hooks with a single command. Your database is now being versioned.</p>
-            <div class="step-code"><code>$ ev start</code></div>
-          </div>
-        </div>
-        <div class="step-connector"></div>
-        <div class="step" data-animate>
-          <div class="step-number">3</div>
-          <div class="step-content">
-            <h3>Browse history</h3>
-            <p>Query the full change history of any entity instance. Filter by time, version, or export as JSON.</p>
-            <div class="step-code"><code>$ ev log --entity course --id 42</code></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+<span class="t-dim"># Browse change history</span>
+ev log --entity course --id 42
 
-  <!-- ===== TERMINAL DEMO ===== -->
-  <section class="section section-alt" id="demo">
-    <div class="container">
-      <h2 class="section-title">See it in action</h2>
-      <p class="section-subtitle">A complete workflow from initialization to change log, showing entity inference and change tracking.</p>
-      <div class="terminal terminal-large">
-        <div class="terminal-header">
-          <span class="terminal-dot red"></span>
-          <span class="terminal-dot yellow"></span>
-          <span class="terminal-dot green"></span>
-          <span class="terminal-title">Terminal</span>
-        </div>
-        <div class="terminal-body">
-<pre><code><span class="t-dim"># Initialize &mdash; auto-discovers entities from your schema</span>
+<span class="t-dim"># JSON output</span>
+ev log --entity course \
+  --id 42 --format json</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== WHY EV? ===== -->
+        <section class="section section-alt" id="why">
+            <div class="container">
+                <h2 class="section-title">Why ev?</h2>
+                <p class="section-subtitle">
+                    Most audit-log solutions require you to instrument your
+                    application &mdash; ORM hooks, middleware, custom triggers
+                    written by hand. <code>ev</code> takes a different approach.
+                </p>
+                <div class="cards-grid cards-3">
+                    <div class="card" data-animate>
+                        <div class="card-icon">
+                            <svg viewBox="0 0 24 24">
+                                <ellipse cx="12" cy="5" rx="9" ry="3" />
+                                <path
+                                    d="M21 12c0 1.66-4.03 3-9 3s-9-1.34-9-3"
+                                />
+                                <path
+                                    d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"
+                                />
+                            </svg>
+                        </div>
+                        <h3>Point it at your database</h3>
+                        <p>
+                            It reads your schema and figures out the rest. No
+                            configuration beyond a connection string.
+                        </p>
+                    </div>
+                    <div class="card" data-animate>
+                        <div class="card-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                            </svg>
+                        </div>
+                        <h3>It installs triggers for you</h3>
+                        <p>
+                            No hand-written SQL, no ORM plugins. Lightweight
+                            triggers that capture every change automatically.
+                        </p>
+                    </div>
+                    <div class="card" data-animate>
+                        <div class="card-icon">
+                            <svg viewBox="0 0 24 24">
+                                <circle cx="12" cy="5" r="3" />
+                                <circle cx="5" cy="19" r="3" />
+                                <circle cx="19" cy="19" r="3" />
+                                <path
+                                    d="M12 8v4m-4.5 2.6L10 12.5m7 4.6L14 12.5"
+                                />
+                            </svg>
+                        </div>
+                        <h3>Entities, not just tables</h3>
+                        <p>
+                            A course with its upsells and services is tracked as
+                            one logical unit. Changes are grouped semantically.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== FEATURES ===== -->
+        <section class="section" id="features">
+            <div class="container">
+                <h2 class="section-title">Features</h2>
+                <p class="section-subtitle">
+                    Everything you need to build a complete audit trail, without
+                    touching your application code.
+                </p>
+                <div class="features-grid">
+                    <div class="feature" data-animate>
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path
+                                    d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"
+                                />
+                            </svg>
+                        </div>
+                        <h3>Zero app changes</h3>
+                        <p>
+                            Works entirely through database triggers. No ORM
+                            plugins, no middleware, no code changes.
+                        </p>
+                    </div>
+                    <div class="feature" data-animate>
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24">
+                                <circle cx="6" cy="6" r="2" />
+                                <circle cx="18" cy="6" r="2" />
+                                <circle cx="6" cy="18" r="2" />
+                                <circle cx="18" cy="18" r="2" />
+                                <path d="M8 6h8M6 8v8m12-8v8M8 18h8" />
+                            </svg>
+                        </div>
+                        <h3>Entity inference</h3>
+                        <p>
+                            Analyzes your FK graph to discover entities and
+                            their child tables automatically.
+                        </p>
+                    </div>
+                    <div class="feature" data-animate>
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24">
+                                <rect
+                                    x="2"
+                                    y="4"
+                                    width="20"
+                                    height="5"
+                                    rx="1"
+                                />
+                                <rect
+                                    x="2"
+                                    y="11"
+                                    width="20"
+                                    height="5"
+                                    rx="1"
+                                />
+                                <path d="M6 20h12" stroke-dasharray="2 2" />
+                            </svg>
+                        </div>
+                        <h3>Transaction-aware</h3>
+                        <p>
+                            Operations within the same DB transaction are
+                            grouped into a single changeset.
+                        </p>
+                    </div>
+                    <div class="feature" data-animate>
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path
+                                    d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"
+                                />
+                                <line x1="12" y1="9" x2="12" y2="13" />
+                                <line x1="12" y1="17" x2="12.01" y2="17" />
+                            </svg>
+                        </div>
+                        <h3>Schema drift detection</h3>
+                        <p>
+                            DDL hooks capture ALTER TABLE events and record
+                            schema changes alongside data changes.
+                        </p>
+                    </div>
+                    <div class="feature" data-animate>
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24">
+                                <polyline points="3 6 5 6 21 6" />
+                                <path
+                                    d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"
+                                />
+                            </svg>
+                        </div>
+                        <h3>Clean teardown</h3>
+                        <p>
+                            <code>ev teardown</code> removes everything. All
+                            objects are namespaced under <code>__ev_</code>.
+                        </p>
+                    </div>
+                    <div class="feature" data-animate>
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path
+                                    d="M12 2v6m0 8v6M4.93 4.93l4.24 4.24m5.66 5.66l4.24 4.24M2 12h6m8 0h6M4.93 19.07l4.24-4.24m5.66-5.66l4.24-4.24"
+                                />
+                            </svg>
+                        </div>
+                        <h3>Any relational database</h3>
+                        <p>
+                            Pluggable connector interface. PostgreSQL and MySQL
+                            ship built-in. Community connectors welcome for
+                            MariaDB, SQL Server, SQLite, and more.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== HOW IT WORKS ===== -->
+        <section class="section section-alt" id="how-it-works">
+            <div class="container">
+                <h2 class="section-title">How it works</h2>
+                <p class="section-subtitle">
+                    Three commands. Five minutes. Full audit trail.
+                </p>
+                <div class="steps">
+                    <div class="step" data-animate>
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h3>Initialize</h3>
+                            <p>
+                                Point ev at your database. It introspects the
+                                schema, analyzes the FK graph, and infers
+                                entities automatically.
+                            </p>
+                            <div class="step-code">
+                                <code
+                                    >$ ev init --host localhost --database myapp
+                                    --engine &lt;your-engine&gt;</code
+                                >
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-connector"></div>
+                    <div class="step" data-animate>
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h3>Start tracking</h3>
+                            <p>
+                                Install changelog tables, DML triggers, and DDL
+                                hooks with a single command. Your database is
+                                now being versioned.
+                            </p>
+                            <div class="step-code"><code>$ ev start</code></div>
+                        </div>
+                    </div>
+                    <div class="step-connector"></div>
+                    <div class="step" data-animate>
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h3>Browse history</h3>
+                            <p>
+                                Query the full change history of any entity
+                                instance. Filter by time, version, or export as
+                                JSON.
+                            </p>
+                            <div class="step-code">
+                                <code>$ ev log --entity course --id 42</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== TERMINAL DEMO ===== -->
+        <section class="section" id="demo">
+            <div class="container">
+                <h2 class="section-title">See it in action</h2>
+                <p class="section-subtitle">
+                    A complete workflow from initialization to change log,
+                    showing entity inference and change tracking.
+                </p>
+                <div class="terminal terminal-large">
+                    <div class="terminal-header">
+                        <span class="terminal-dot red"></span>
+                        <span class="terminal-dot yellow"></span>
+                        <span class="terminal-dot green"></span>
+                        <span class="terminal-title">Terminal</span>
+                    </div>
+                    <div class="terminal-body">
+                        <pre><code><span class="t-dim"># Initialize &mdash; auto-discovers entities from your schema</span>
 <span class="t-green">$</span> ev init --host localhost --port 5432 --database edtech --engine postgres
 
 <span class="t-cyan">Introspecting schema...</span>
@@ -266,18 +482,23 @@ DDL hooks: <span class="t-green">installed</span> (event trigger)
 
 Dropped 9 triggers, 3 functions, 2 tables, 1 event trigger
 <span class="t-green t-bold">All __ev_ objects removed.</span></code></pre>
-        </div>
-      </div>
-    </div>
-  </section>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-  <!-- ===== ARCHITECTURE ===== -->
-  <section class="section" id="architecture">
-    <div class="container">
-      <h2 class="section-title">Architecture</h2>
-      <p class="section-subtitle">Engine-agnostic core with a pluggable connector interface. Add new databases without touching business logic.</p>
-      <div class="arch-diagram">
-<pre class="arch-ascii"><code><span class="t-dim">&#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;</span>
+        <!-- ===== ARCHITECTURE ===== -->
+        <section class="section section-alt" id="architecture">
+            <div class="container">
+                <h2 class="section-title">Architecture</h2>
+                <p class="section-subtitle">
+                    Engine-agnostic core with a pluggable connector interface.
+                    Add new databases without touching business logic.
+                </p>
+                <div class="arch-diagram">
+                    <pre
+                        class="arch-ascii"
+                    ><code><span class="t-dim">&#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;</span>
 <span class="t-dim">&#9474;</span>                       <span class="t-cyan t-bold">CLI (ev)</span>                         <span class="t-dim">&#9474;</span>
 <span class="t-dim">&#9474;</span>  init &middot; entities &middot; start &middot; stop &middot; status &middot; log &middot; ...   <span class="t-dim">&#9474;</span>
 <span class="t-dim">&#9500;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9508;</span>
@@ -295,126 +516,120 @@ Dropped 9 triggers, 3 functions, 2 tables, 1 event trigger
     <span class="t-dim">&#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;</span>
     <span class="t-dim">&#9474;</span> <span class="t-bold">Your DB</span>  <span class="t-dim">&#9474;</span>
     <span class="t-dim">&#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;</span></code></pre>
-      </div>
-      <div class="arch-cards">
-        <div class="arch-card" data-animate>
-          <h4>CLI Layer</h4>
-          <p>Parses commands, reads config, delegates to the core engine. No business logic here.</p>
-        </div>
-        <div class="arch-card" data-animate>
-          <h4>Core Engine</h4>
-          <p>FK graph analysis, entity resolution, changeset building. Engine-agnostic &mdash; never touches SQL.</p>
-        </div>
-        <div class="arch-card" data-animate>
-          <h4>Connector Interface</h4>
-          <p>Abstract contract: introspect, triggers, DDL hooks, query, health. Clean separation of concerns.</p>
-        </div>
-        <div class="arch-card" data-animate>
-          <h4>Connectors</h4>
-          <p>Engine-specific implementations loaded dynamically. Add your own for any relational database.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===== QUICK START ===== -->
-  <section class="section section-alt" id="quickstart">
-    <div class="container">
-      <h2 class="section-title">Quick start</h2>
-      <p class="section-subtitle">Up and running in under five minutes.</p>
-      <div class="quickstart-grid">
-        <div class="quickstart-step" data-animate>
-          <h3>Install</h3>
-          <div class="code-block">
-            <div class="code-header">
-              <span>Shell</span>
-              <button class="copy-btn">Copy</button>
+                </div>
+                <div class="arch-cards">
+                    <div class="arch-card" data-animate>
+                        <h4>CLI Layer</h4>
+                        <p>
+                            Parses commands, reads config, delegates to the core
+                            engine. No business logic here.
+                        </p>
+                    </div>
+                    <div class="arch-card" data-animate>
+                        <h4>Core Engine</h4>
+                        <p>
+                            FK graph analysis, entity resolution, changeset
+                            building. Engine-agnostic &mdash; never touches SQL.
+                        </p>
+                    </div>
+                    <div class="arch-card" data-animate>
+                        <h4>Connector Interface</h4>
+                        <p>
+                            Abstract contract: introspect, triggers, DDL hooks,
+                            query, health. Clean separation of concerns.
+                        </p>
+                    </div>
+                    <div class="arch-card" data-animate>
+                        <h4>Connectors</h4>
+                        <p>
+                            Engine-specific implementations loaded dynamically.
+                            Add your own for any relational database.
+                        </p>
+                    </div>
+                </div>
             </div>
-            <pre><code><span class="t-dim"># One-liner install (Linux / macOS)</span>
-curl -fsSL https://raw.githubusercontent.com/sgmonda/entity-versioning/main/install.sh | sh</code></pre>
-          </div>
-        </div>
-        <div class="quickstart-step" data-animate>
-          <h3>Initialize</h3>
-          <div class="code-block">
-            <div class="code-header">
-              <span>Shell</span>
-              <button class="copy-btn">Copy</button>
+        </section>
+
+        <!-- ===== FOOTER ===== -->
+        <footer class="footer">
+            <div class="container">
+                <div class="footer-grid">
+                    <div class="footer-brand">
+                        <span class="footer-logo">ev</span>
+                        <p>
+                            Full change history for your database &mdash; zero
+                            application changes. Built with Deno. Open source
+                            under the MIT license.
+                        </p>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Project</h4>
+                        <ul>
+                            <li>
+                                <a
+                                    href="https://github.com/sgmonda/entity-versioning"
+                                    target="_blank"
+                                    rel="noopener"
+                                    >GitHub</a
+                                >
+                            </li>
+                            <li>
+                                <a
+                                    href="https://github.com/sgmonda/entity-versioning/releases"
+                                    target="_blank"
+                                    rel="noopener"
+                                    >Releases</a
+                                >
+                            </li>
+                            <li><a href="SPEC.md">Specification</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Resources</h4>
+                        <ul>
+                            <li><a href="#quickstart">Quick start</a></li>
+                            <li><a href="#features">Features</a></li>
+                            <li>
+                                <a
+                                    href="https://github.com/sgmonda/entity-versioning/issues"
+                                    target="_blank"
+                                    rel="noopener"
+                                    >Issues</a
+                                >
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Community</h4>
+                        <ul>
+                            <li>
+                                <a
+                                    href="https://github.com/sgmonda/entity-versioning/blob/main/LICENSE"
+                                    target="_blank"
+                                    rel="noopener"
+                                    >MIT License</a
+                                >
+                            </li>
+                            <li>
+                                <a
+                                    href="https://github.com/sgmonda/entity-versioning#contributing"
+                                    target="_blank"
+                                    rel="noopener"
+                                    >Contributing</a
+                                >
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>
+                        Built with Deno &middot; Works with any relational
+                        database
+                    </p>
+                </div>
             </div>
-            <pre><code><span class="t-dim"># Set credentials</span>
-export EV_DB_USER=myuser
-export EV_DB_PASSWORD=mypass
+        </footer>
 
-<span class="t-dim"># Auto-discover entities
-# Works with postgres, mysql, and
-# any community connector</span>
-ev init \
-  --host localhost \
-  --port 5432 \
-  --database myapp \
-  --engine postgres</code></pre>
-          </div>
-        </div>
-        <div class="quickstart-step" data-animate>
-          <h3>Start &amp; query</h3>
-          <div class="code-block">
-            <div class="code-header">
-              <span>Shell</span>
-              <button class="copy-btn">Copy</button>
-            </div>
-            <pre><code><span class="t-dim"># Install triggers</span>
-ev start
-
-<span class="t-dim"># Browse change history</span>
-ev log --entity course --id 42
-
-<span class="t-dim"># JSON output</span>
-ev log --entity course \
-  --id 42 --format json</code></pre>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===== FOOTER ===== -->
-  <footer class="footer">
-    <div class="container">
-      <div class="footer-grid">
-        <div class="footer-brand">
-          <span class="footer-logo">ev</span>
-          <p>Full change history for your database &mdash; zero application changes. Built with Deno. Open source under the MIT license.</p>
-        </div>
-        <div class="footer-col">
-          <h4>Project</h4>
-          <ul>
-            <li><a href="https://github.com/sgmonda/entity-versioning" target="_blank" rel="noopener">GitHub</a></li>
-            <li><a href="https://github.com/sgmonda/entity-versioning/releases" target="_blank" rel="noopener">Releases</a></li>
-            <li><a href="SPEC.md">Specification</a></li>
-          </ul>
-        </div>
-        <div class="footer-col">
-          <h4>Resources</h4>
-          <ul>
-            <li><a href="#quickstart">Quick start</a></li>
-            <li><a href="#features">Features</a></li>
-            <li><a href="https://github.com/sgmonda/entity-versioning/issues" target="_blank" rel="noopener">Issues</a></li>
-          </ul>
-        </div>
-        <div class="footer-col">
-          <h4>Community</h4>
-          <ul>
-            <li><a href="https://github.com/sgmonda/entity-versioning/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a></li>
-            <li><a href="https://github.com/sgmonda/entity-versioning#contributing" target="_blank" rel="noopener">Contributing</a></li>
-          </ul>
-        </div>
-      </div>
-      <div class="footer-bottom">
-        <p>Built with Deno &middot; Works with any relational database</p>
-      </div>
-    </div>
-  </footer>
-
-  <script src="script.js"></script>
-</body>
+        <script src="script.js"></script>
+    </body>
 </html>

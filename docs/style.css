@@ -568,10 +568,6 @@ ul {
     line-height: 1.6;
 }
 
-.feature:last-child {
-    grid-column: 2;
-}
-
 /* --- Steps (How it works) --- */
 .steps {
     max-width: 620px;
@@ -693,8 +689,12 @@ ul {
 /* --- Quick Start --- */
 .quickstart-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 1.5rem;
+}
+
+.quickstart-step:first-child {
+    grid-column: span 2;
 }
 
 .quickstart-step h3 {
