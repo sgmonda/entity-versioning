@@ -1,0 +1,65 @@
+# ev.config.yaml — Entity Versioning configuration
+version: 1
+
+connection:
+  engine: postgres
+  host: localhost
+  port: 5432
+  database: myapp
+  user_env: EV_DB_USER
+  password_env: EV_DB_PASSWORD
+
+settings:
+  changelog_table: __ev_changelog
+  schema_snapshots_table: __ev_schema_snapshots
+  autocommit_grouping_window_ms: 500
+  max_entity_depth: 1
+  capture_old_values: true
+  capture_new_values: true
+
+entities:
+  course:
+    root_table: course
+    root_pk: id
+    children:
+      - table: course_upsell
+        fk_column: courseId
+      - table: course_service
+        fk_column: courseId
+      - table: course_users_user
+        fk_column: courseId
+      - table: course_teacher_blacklist
+        fk_column: courseId
+      - table: course_forum_topic
+        fk_column: courseId
+
+  billing:
+    root_table: billing
+    root_pk: id
+    children:
+      - table: billing_line
+        fk_column: billingId
+      - table: billing_rate_incentive
+        fk_column: billingId
+      - table: billing_bonus_course_tutor
+        fk_column: invoiceId
+
+  class:
+    root_table: class
+    root_pk: id
+    children:
+      - table: class_evaluations
+        fk_column: classId
+      - table: class_feedback_teacher
+        fk_column: classId
+      - table: class_issue
+        fk_column: classId
+      - table: class_history
+        fk_column: classId
+      - table: chat
+        fk_column: classId
+
+ignored_tables:
+  - migrations
+  - bi_calendar
+  - tracking_event

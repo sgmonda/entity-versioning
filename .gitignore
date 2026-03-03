@@ -1,0 +1,8 @@
+ev
+ev-linux
+ev-macos
+ev.exe
+.env
+node_modules/
+.DS_Store
+ev.config.yaml
