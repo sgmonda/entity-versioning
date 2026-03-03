@@ -2,7 +2,7 @@ version: 1
 connection:
   engine: postgres
   host: localhost
-  port: 5434
+  port: 60685
   database: ev_demo
   user_env: EV_DEMO_USER
   password_env: EV_DEMO_PASS

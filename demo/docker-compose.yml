@@ -2,7 +2,7 @@ services:
   postgres-demo:
     image: postgres:16
     ports:
-      - "5434:5432"
+      - "${EV_DEMO_PORT:?EV_DEMO_PORT required}:5432"
     environment:
       POSTGRES_DB: ev_demo
       POSTGRES_USER: ev_user

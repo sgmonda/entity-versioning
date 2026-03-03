@@ -19,18 +19,10 @@ import type { EvConfig } from "../src/config.ts";
 import type { Sql } from "../src/connectors/postgres/types.ts";
 
 // ---------------------------------------------------------------------------
-// Config
+// Constants
 // ---------------------------------------------------------------------------
 
-const DB_CONFIG = {
-  engine: "postgres" as const,
-  host: "localhost",
-  port: 5434,
-  database: "ev_demo",
-  user: "ev_user",
-  password: "ev_pass",
-};
-
+const COMPOSE_FILE = "demo/docker-compose.yml";
 const CONFIG_PATH = "demo/ev.config.demo.yaml";
 const RESET_FLAG = Deno.args.includes("--reset");
 
@@ -46,6 +38,29 @@ function step(msg: string) {
 
 function info(msg: string) {
   console.log(`      ${msg}`);
+}
+
+async function findFreePort(): Promise<number> {
+  const listener = Deno.listen({ port: 0 });
+  const port = (listener.addr as Deno.NetAddr).port;
+  listener.close();
+  return port;
+}
+
+async function dockerCompose(
+  args: string[],
+  env?: Record<string, string>,
+): Promise<void> {
+  const cmd = new Deno.Command("docker", {
+    args: ["compose", "-f", COMPOSE_FILE, ...args],
+    env: { ...Deno.env.toObject(), ...env },
+    stdout: "inherit",
+    stderr: "inherit",
+  });
+  const result = await cmd.output();
+  if (!result.success) {
+    throw new Error(`docker compose ${args.join(" ")} failed`);
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -116,14 +131,14 @@ async function loadSeedData(sql: Sql) {
 // Config generation
 // ---------------------------------------------------------------------------
 
-async function generateConfig() {
+async function generateConfig(port: number) {
   step(`Generating ${CONFIG_PATH}...`);
   const config: EvConfig = {
     version: 1,
     connection: {
       engine: "postgres",
       host: "localhost",
-      port: 5434,
+      port,
       database: "ev_demo",
       user_env: "EV_DEMO_USER",
       password_env: "EV_DEMO_PASS",
@@ -488,26 +503,46 @@ async function main() {
   console.log("\n  ev playground");
   console.log("  =============\n");
 
+  if (RESET_FLAG) {
+    step("Stopping demo container...");
+    await dockerCompose(["down", "-v"], { EV_DEMO_PORT: "0" });
+    info("Container and data removed.");
+    try {
+      await Deno.remove(CONFIG_PATH);
+      info(`${CONFIG_PATH} deleted.`);
+    } catch { /* file may not exist */ }
+    return;
+  }
+
+  // Find a free port and start the container
+  const port = await findFreePort();
+  step(`Starting PostgreSQL container on port ${port}...`);
+  await dockerCompose(["up", "-d", "--wait"], { EV_DEMO_PORT: String(port) });
+  info("Container ready.");
+
+  const dbConfig = {
+    engine: "postgres" as const,
+    host: "localhost",
+    port,
+    database: "ev_demo",
+    user: "ev_user",
+    password: "ev_pass",
+  };
+
   const connector = new PostgresConnector();
   try {
     step("Connecting to PostgreSQL...");
-    await connector.connect(DB_CONFIG);
-    info(`${DB_CONFIG.host}:${DB_CONFIG.port}/${DB_CONFIG.database}`);
+    await connector.connect(dbConfig);
+    info(`${dbConfig.host}:${dbConfig.port}/${dbConfig.database}`);
 
     const sql = connector.getSql();
 
-    // Always clean first (idempotent)
+    // Always clean first (idempotent — handles re-runs with persisted volume)
     await cleanAll(sql);
-
-    if (RESET_FLAG) {
-      info("Reset complete. Database is clean.");
-      await connector.disconnect();
-      return;
-    }
 
     await loadSchema(sql);
     await loadSeedData(sql);
-    await generateConfig();
+    await generateConfig(port);
     await evStart(connector);
     await simulateOperations(sql);
     await printSummary(sql);

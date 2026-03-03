@@ -6,8 +6,8 @@
     "test:unit": "deno test --allow-read --allow-env tests/core/",
     "test:integration": "deno test --allow-net --allow-read --allow-env --allow-write tests/connectors/",
     "compile": "deno compile --allow-net --allow-read --allow-env --allow-write --output out/ev main.ts",
-    "demo": "docker compose -f demo/docker-compose.yml up -d --wait && deno run --allow-net --allow-read --allow-env --allow-write demo/playground.ts",
-    "demo:reset": "deno run --allow-net --allow-read --allow-env --allow-write demo/playground.ts --reset && docker compose -f demo/docker-compose.yml down -v"
+    "demo": "deno run --allow-net --allow-read --allow-env --allow-write --allow-run demo/playground.ts",
+    "demo:reset": "deno run --allow-net --allow-read --allow-env --allow-write --allow-run demo/playground.ts --reset"
   },
   "imports": {
     "@std/yaml": "jsr:@std/yaml@^1",
