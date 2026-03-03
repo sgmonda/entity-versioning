@@ -15,7 +15,7 @@
 <p align="center">
   <a href="https://sgmonda.com/entity-versioning">Website</a>
   ·
-  <a href="https://sgmonda.com/entity-versioning/releases">Releases</a>
+  <a href="https://github.com/sgmonda/entity-versioning/releases">Releases</a>
 </p>
 
 <code>ev</code> connects to any relational database, infers semantic entities from the foreign key graph, and installs lightweight triggers to capture every INSERT, UPDATE, and DELETE. Changes are grouped into versioned changesets you can browse, query, and export.
