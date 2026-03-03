@@ -45,8 +45,8 @@ export function validateConfig(config: EvConfig): string[] {
   if (!config.connection) errors.push("Missing 'connection'");
   if (config.connection) {
     if (!config.connection.engine) errors.push("Missing 'connection.engine'");
-    if (!["postgres"].includes(config.connection.engine)) {
-      errors.push(`Invalid engine '${config.connection.engine}'. Supported: postgres`);
+    if (!["postgres", "mysql"].includes(config.connection.engine)) {
+      errors.push(`Invalid engine '${config.connection.engine}'. Supported: postgres, mysql`);
     }
     if (!config.connection.host) errors.push("Missing 'connection.host'");
     if (!config.connection.port) errors.push("Missing 'connection.port'");

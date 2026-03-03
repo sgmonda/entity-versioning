@@ -15,5 +15,24 @@ services:
       timeout: 5s
       retries: 10
 
+  mysql:
+    image: mysql:8
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_DATABASE: ev_test_mysql
+      MYSQL_USER: ev_user
+      MYSQL_PASSWORD: ev_pass
+      MYSQL_ROOT_PASSWORD: ev_root_pass
+    command: --log-bin-trust-function-creators=1
+    volumes:
+      - mysqldata:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 2s
+      timeout: 5s
+      retries: 10
+
 volumes:
   pgdata:
+  mysqldata:
