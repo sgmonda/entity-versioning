@@ -25,13 +25,13 @@ import type { Sql } from "../src/connectors/postgres/types.ts";
 const DB_CONFIG = {
   engine: "postgres" as const,
   host: "localhost",
-  port: 5433,
-  database: "ev_test",
+  port: 5434,
+  database: "ev_demo",
   user: "ev_user",
   password: "ev_pass",
 };
 
-const CONFIG_PATH = "ev.config.demo.yaml";
+const CONFIG_PATH = "demo/ev.config.demo.yaml";
 const RESET_FLAG = Deno.args.includes("--reset");
 
 // ---------------------------------------------------------------------------
@@ -123,8 +123,8 @@ async function generateConfig() {
     connection: {
       engine: "postgres",
       host: "localhost",
-      port: 5433,
-      database: "ev_test",
+      port: 5434,
+      database: "ev_demo",
       user_env: "EV_DEMO_USER",
       password_env: "EV_DEMO_PASS",
     },

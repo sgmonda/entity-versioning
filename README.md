@@ -226,13 +226,13 @@ deno task demo
 
 # Explore the changelog
 EV_DEMO_USER=ev_user EV_DEMO_PASS=ev_pass \
-  deno task dev log --entity course --id 1 -c ev.config.demo.yaml
+  deno task dev log --entity course --id 1 -c demo/ev.config.demo.yaml
 
 EV_DEMO_USER=ev_user EV_DEMO_PASS=ev_pass \
-  deno task dev log --entity billing --id 1 -c ev.config.demo.yaml
+  deno task dev log --entity billing --id 1 -c demo/ev.config.demo.yaml
 
 EV_DEMO_USER=ev_user EV_DEMO_PASS=ev_pass \
-  deno task dev status -c ev.config.demo.yaml
+  deno task dev status -c demo/ev.config.demo.yaml
 
 # Reset everything
 deno task demo:reset
