@@ -232,17 +232,17 @@ Raw changelog entries are grouped into semantic changesets:
 
 ```
 ┌───────────────────────────────────────────────────────┐
-│                       CLI (ev)                         │
-│  init · entities · start · stop · status · log · ...   │
+│                       CLI (ev)                        │
+│  init · entities · start · stop · status · log · ...  │
 ├───────────────────────────────────────────────────────┤
-│                     Core Engine                        │
-│  Schema Analyzer · Entity Resolver · Changeset Builder │
+│                     Core Engine                       │
+│  Schema Analyzer · Entity Resolver · Changes Builder  │
 ├───────────────────────────────────────────────────────┤
-│                  Connector Interface                   │
-│  introspect · triggers · ddl_hooks · query · health    │
+│                  Connector Interface                  │
+│  introspect · triggers · ddl_hooks · query · health   │
 ├──────────────────┬──────────────┬─────────────────────┤
-│  PostgreSQL      │    MySQL     │  Community           │
-│  (built-in)      │  (built-in)  │  connectors          │
+│  PostgreSQL      │    MySQL     │  Community          │
+│  (built-in)      │  (built-in)  │  connectors         │
 └──────────────────┴──────────────┴─────────────────────┘
          │
          ▼
