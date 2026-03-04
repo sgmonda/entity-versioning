@@ -91,6 +91,13 @@ code {
     font-size: 0.9em;
 }
 
+p > code {
+    border: solid 1px var(--accent-subtle);
+    background-color: var(--accent-glow);
+    border-radius: 3px;
+    padding: 0.15em 0.4em;
+}
+
 img {
     max-width: 100%;
 }

@@ -156,42 +156,15 @@
                             <pre><code><span class="t-dim"># One-liner install (Linux / macOS)</span>
 curl -fsSL https://raw.githubusercontent.com/sgmonda/entity-versioning/main/install.sh | sh</code></pre>
                         </div>
-                    </div>
-                    <div class="quickstart-step" data-animate>
-                        <h3>Initialize</h3>
-                        <div class="code-block">
-                            <div class="code-header">
-                                <span>Shell</span>
-                                <button class="copy-btn">Copy</button>
-                            </div>
-                            <pre><code><span class="t-dim"># Auto-discover entities</span>
-ev init \
-  --host localhost \
-  --port 5432 \
-  --database myapp \
-  --engine postgres
-
-<span class="t-dim"># Fine-tune entities</span>
-ev entities</code></pre>
-                        </div>
-                    </div>
-                    <div class="quickstart-step" data-animate>
-                        <h3>Start &amp; query</h3>
-                        <div class="code-block">
-                            <div class="code-header">
-                                <span>Shell</span>
-                                <button class="copy-btn">Copy</button>
-                            </div>
-                            <pre><code><span class="t-dim"># Install triggers</span>
-ev start
-
-<span class="t-dim"># Browse change history</span>
-ev log --entity course --id 42
-
-<span class="t-dim"># JSON output</span>
-ev log --entity course \
-  --id 42 --format json</code></pre>
-                        </div>
+                        <p style="margin-top: 1em">
+                            This will prepare <code>ev</code> command, so you
+                            can start using entity versioning in your databases.
+                            A simple <code>ev --help</code> will show you all
+                            available commands and options. Later, you could
+                            upgrade to a newer version with a simple
+                            <code>ev upgrade</code>, or even self-uninstall it
+                            completely using <code>ev uninstall</code>.
+                        </p>
                     </div>
                 </div>
             </div>
@@ -392,8 +365,8 @@ ev log --entity course \
                             </p>
                             <div class="step-code">
                                 <code
-                                    >$ ev init --host localhost --database myapp
-                                    --engine &lt;your-engine&gt;</code
+                                    >$ ev init --host localhost --port 5432
+                                    --database myapp</code
                                 >
                             </div>
                         </div>
@@ -401,6 +374,22 @@ ev log --entity course \
                     <div class="step-connector"></div>
                     <div class="step" data-animate>
                         <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h3>Fine-tune entities</h3>
+                            <p>
+                                Even if they are inferred from foreign keys, you
+                                can still customize them. Add or remove tables,
+                                define parent-child relationships, and exclude
+                                columns from tracking.
+                            </p>
+                            <div class="step-code">
+                                <code>$ ev entities</code>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-connector"></div>
+                    <div class="step" data-animate>
+                        <div class="step-number">3</div>
                         <div class="step-content">
                             <h3>Start tracking</h3>
                             <p>
@@ -413,7 +402,7 @@ ev log --entity course \
                     </div>
                     <div class="step-connector"></div>
                     <div class="step" data-animate>
-                        <div class="step-number">3</div>
+                        <div class="step-number">4</div>
                         <div class="step-content">
                             <h3>Browse history</h3>
                             <p>
@@ -499,17 +488,17 @@ Dropped 9 triggers, 3 functions, 2 tables, 1 event trigger
                     <pre
                         class="arch-ascii"
                     ><code><span class="t-dim">&#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;</span>
-<span class="t-dim">&#9474;</span>                       <span class="t-cyan t-bold">CLI (ev)</span>                         <span class="t-dim">&#9474;</span>
-<span class="t-dim">&#9474;</span>  init &middot; entities &middot; start &middot; stop &middot; status &middot; log &middot; ...   <span class="t-dim">&#9474;</span>
+<span class="t-dim">&#9474;</span>                       <span class="t-cyan t-bold">CLI (ev)</span>                        <span class="t-dim">&#9474;</span>
+<span class="t-dim">&#9474;</span>  init &middot; entities &middot; start &middot; stop &middot; status &middot; log &middot; ...  <span class="t-dim">&#9474;</span>
 <span class="t-dim">&#9500;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9508;</span>
-<span class="t-dim">&#9474;</span>                     <span class="t-yellow t-bold">Core Engine</span>                        <span class="t-dim">&#9474;</span>
-<span class="t-dim">&#9474;</span>  Schema Analyzer &middot; Entity Resolver &middot; Changeset Builder <span class="t-dim">&#9474;</span>
+<span class="t-dim">&#9474;</span>                     <span class="t-yellow t-bold">Core Engine</span>                       <span class="t-dim">&#9474;</span>
+<span class="t-dim">&#9474;</span>  Schema Analyzer &middot; Entity Resolver &middot; Changes Builder  <span class="t-dim">&#9474;</span>
 <span class="t-dim">&#9500;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9508;</span>
-<span class="t-dim">&#9474;</span>                  <span class="t-magenta t-bold">Connector Interface</span>                   <span class="t-dim">&#9474;</span>
-<span class="t-dim">&#9474;</span>  introspect &middot; triggers &middot; ddl_hooks &middot; query &middot; health    <span class="t-dim">&#9474;</span>
+<span class="t-dim">&#9474;</span>                  <span class="t-magenta t-bold">Connector Interface</span>                  <span class="t-dim">&#9474;</span>
+<span class="t-dim">&#9474;</span>  introspect &middot; triggers &middot; ddl_hooks &middot; query &middot; health   <span class="t-dim">&#9474;</span>
 <span class="t-dim">&#9500;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9516;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9516;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9508;</span>
-<span class="t-dim">&#9474;</span>  <span class="t-green t-bold">PostgreSQL</span>      <span class="t-dim">&#9474;</span>    <span class="t-green t-bold">MySQL</span>     <span class="t-dim">&#9474;</span> <span class="t-cyan t-bold">Community</span>            <span class="t-dim">&#9474;</span>
-<span class="t-dim">&#9474;</span>  <span class="t-dim">(built-in)</span>      <span class="t-dim">&#9474;</span>  <span class="t-dim">(built-in)</span>  <span class="t-dim">&#9474;</span> <span class="t-dim">connectors</span>           <span class="t-dim">&#9474;</span>
+<span class="t-dim">&#9474;</span>  <span class="t-green t-bold">PostgreSQL</span>      <span class="t-dim">&#9474;</span>    <span class="t-green t-bold">MySQL</span>     <span class="t-dim">&#9474;</span> <span class="t-cyan t-bold">  Community</span>         <span class="t-dim">&#9474;</span>
+<span class="t-dim">&#9474;</span>  <span class="t-dim">(built-in)</span>      <span class="t-dim">&#9474;</span>  <span class="t-dim">(built-in)</span>  <span class="t-dim">&#9474;</span>   <span class="t-dim">connectors</span>        <span class="t-dim">&#9474;</span>
 <span class="t-dim">&#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9524;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9524;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;</span>
          <span class="t-dim">&#9474;</span>
          <span class="t-dim">&#9660;</span>
